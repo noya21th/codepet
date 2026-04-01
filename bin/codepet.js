@@ -483,9 +483,10 @@ function doPopup() {
     const escapedScript = script.replace(/'/g, "'\\''");
     execSync(`osascript -e 'tell application "Terminal" to do script "export HISTFILE=/dev/null && export BASH_SILENCE_DEPRECATION_WARNING=1 && export PS1=\\\"\\\" && clear && ${PYTHON} \\\"${escapedScript}\\\" ${pet.character} ${scene} 40 2>/dev/null && printf \\\"\\\\033[?25l\\\" && cat > /dev/null"' -e 'tell application "Terminal" to activate' &`, { shell: true, stdio: 'ignore' });
   } else if (process.platform === 'win32') {
-    // Windows: 弹新 PowerShell 窗口显示彩色像素画拍立得
-    const script = path.join(__dirname, '..', 'scripts', 'polaroid.py').replace(/\\/g, '\\\\');
-    const psCmd = `${PYTHON} \\"${script}\\" ${pet.character} ${scene} 40 2>$null; Read-Host`;
+    // Windows: 弹新 PowerShell 窗口，自动开启 ANSI 彩色支持
+    const script = path.join(__dirname, '..', 'scripts', 'polaroid.py').replace(/\\/g, '/');
+    const enableAnsi = `[Console]::OutputEncoding=[Text.Encoding]::UTF8; $Host.UI.RawUI.WindowTitle='📸 Ai小蓝鲸照相馆'; Set-ItemProperty HKCU:\\\\Console VirtualTerminalLevel -Type DWORD -Value 1 -ErrorAction SilentlyContinue;`;
+    const psCmd = `${enableAnsi} ${PYTHON} '${script}' ${pet.character} ${scene} 40 2>$null; Read-Host '按回车关闭'`;
     execSync(`start powershell -NoProfile -Command "${psCmd}"`, { shell: true, stdio: 'ignore' });
   } else {
     // Linux: 尝试终端弹窗
