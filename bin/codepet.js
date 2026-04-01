@@ -16,9 +16,11 @@ const { execSync } = require('child_process');
 
 // 跨平台 Python 命令检测
 function getPython() {
-  for (const cmd of ['python3', 'python']) {
+  // Windows 优先 python，Mac/Linux 优先 python3
+  const order = process.platform === 'win32' ? ['python', 'python3'] : ['python3', 'python'];
+  for (const cmd of order) {
     try {
-      execSync(`${cmd} --version`, { stdio: 'ignore' });
+      execSync(`${cmd} -c "print(1)"`, { stdio: 'ignore' });
       return cmd;
     } catch {}
   }
