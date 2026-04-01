@@ -1,6 +1,6 @@
 {
   "name": "codepet",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "description": "在编程软件里养电子宠物 — 支持 Claude Code / Codex / Cursor / VS Code 等 10+ 平台",
   "main": "core/index.js",
   "bin": {
@@ -13,15 +13,25 @@
   },
   "keywords": [
     "pet",
+    "codepet",
+    "宠物",
+    "chongwu",
     "coding-companion",
     "terminal-art",
     "claude-code",
     "vscode",
     "cursor",
     "codex",
+    "kiro",
+    "codebuddy",
+    "openclaw",
+    "antigravity",
+    "opencode",
     "ascii-art",
     "pixel-art",
-    "tamagotchi"
+    "tamagotchi",
+    "ai-pet",
+    "ai小蓝鲸"
   ],
   "author": "Ai小蓝鲸",
   "license": "MIT",

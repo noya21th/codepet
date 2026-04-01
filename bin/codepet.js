@@ -476,20 +476,17 @@ function doPopup() {
   if (!pet) { console.log('  还没有宠物。'); return; }
   if (!PYTHON) { console.log('  需要安装 Python。'); return; }
   const scene = arg || 'normal';
-  const script = path.join(__dirname, '..', 'scripts', 'polaroid.py');
 
-  if (process.platform === 'win32') {
-    // Windows: 用 start cmd 弹新窗口
-    // /k keeps CMD open so user can see the polaroid; they close it manually
-    execSync(`start "" cmd /k "${PYTHON} \\"${script}\\" ${pet.character} ${scene} 40 2>nul"`, { shell: true, stdio: 'ignore' });
-  } else if (process.platform === 'darwin') {
-    // macOS: 用 osascript 弹 Terminal
+  if (process.platform === 'darwin') {
+    // macOS: 弹新 Terminal 窗口显示彩色像素风拍立得
+    const script = path.join(__dirname, '..', 'scripts', 'polaroid.py');
     const escapedScript = script.replace(/'/g, "'\\''");
     execSync(`osascript -e 'tell application "Terminal" to do script "export HISTFILE=/dev/null && export BASH_SILENCE_DEPRECATION_WARNING=1 && export PS1=\\\"\\\" && clear && ${PYTHON} \\\"${escapedScript}\\\" ${pet.character} ${scene} 40 2>/dev/null && printf \\\"\\\\033[?25l\\\" && cat > /dev/null"' -e 'tell application "Terminal" to activate' &`, { shell: true, stdio: 'ignore' });
   } else {
-    // Linux
+    // Windows / Linux: 生成 PNG 拍立得图片，用系统图片查看器打开
+    const script = path.join(__dirname, '..', 'scripts', 'polaroid_image.py');
     try {
-      execSync(`${PYTHON} "${script}" ${pet.character} ${scene} 40`, { stdio: 'inherit' });
+      execSync(`${PYTHON} "${script}" ${pet.character} ${scene}`, { encoding: 'utf-8', stdio: 'inherit' });
     } catch {}
   }
 }
