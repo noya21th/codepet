@@ -4,6 +4,12 @@
 import sys
 from PIL import Image
 
+if sys.platform == 'win32':
+    try:
+        import ctypes
+        ctypes.windll.kernel32.SetConsoleMode(ctypes.windll.kernel32.GetStdHandle(-11), 7)
+    except: pass
+
 # 亮度到字符映射（从亮到暗）
 CHARS = " .:-=+*#%@█"
 

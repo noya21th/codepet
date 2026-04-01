@@ -318,8 +318,8 @@ function renderSprite(character, variant) {
     }
     if (fs.existsSync(spritePath) && fs.existsSync(renderScript)) {
       try {
-        const output = execSync(`${PYTHON} "${renderScript}" "${spritePath}" ${RENDER_WIDTH}`, { encoding: 'utf-8' });
-        console.log(output);
+        // stdio: 'inherit' 让 Python 直接写入终端（保留 ANSI 彩色）
+        execSync(`${PYTHON} "${renderScript}" "${spritePath}" ${RENDER_WIDTH}`, { stdio: 'inherit' });
       } catch (e) {}
     }
   }
@@ -511,7 +511,7 @@ function doCard() {
   const cardScript = path.join(__dirname, '..', 'scripts', 'pet_card.py');
   if (fs.existsSync(cardScript)) {
     try {
-      execSync(`${PYTHON} "${cardScript}"`, { encoding: 'utf-8', stdio: 'inherit' });
+      execSync(`${PYTHON} "${cardScript}"`, { stdio: 'inherit' });
       // 跨平台打开图片
       const cardPath = path.join(os.homedir(), '.codepet', 'card.png');
       const openCmd = process.platform === 'win32' ? 'start ""' : process.platform === 'darwin' ? 'open' : 'xdg-open';
