@@ -485,9 +485,17 @@ function doPopup() {
   } else if (process.platform === 'win32') {
     // Windows: 弹新 PowerShell 窗口，自动开启 ANSI 彩色支持
     const script = path.join(__dirname, '..', 'scripts', 'polaroid.py').replace(/\\/g, '/');
-    const enableAnsi = `[Console]::OutputEncoding=[Text.Encoding]::UTF8; $Host.UI.RawUI.WindowTitle='📸 Ai小蓝鲸照相馆'; Set-ItemProperty HKCU:\\\\Console VirtualTerminalLevel -Type DWORD -Value 1 -ErrorAction SilentlyContinue;`;
-    const psCmd = `${enableAnsi} try { ${PYTHON} '${script}' ${pet.character} ${scene} 40 } catch { Write-Host $_.Exception.Message }; Read-Host`;
-    execSync(`start powershell -NoExit -NoProfile -Command "${psCmd}"`, { shell: true, stdio: 'ignore' });
+    // 写临时 PS1 脚本避免转义问题
+    const tmpPs1 = path.join(os.tmpdir(), 'codepet_photo.ps1');
+    const ps1Content = `
+[Console]::OutputEncoding = [Text.Encoding]::UTF8
+$Host.UI.RawUI.WindowTitle = '📸 Ai小蓝鲸照相馆'
+try { Set-ItemProperty HKCU:\\Console VirtualTerminalLevel -Type DWORD -Value 1 -ErrorAction SilentlyContinue } catch {}
+& ${PYTHON} "${script}" ${pet.character} ${scene} 40
+Read-Host
+`;
+    fs.writeFileSync(tmpPs1, ps1Content, 'utf-8');
+    execSync(`start powershell -NoProfile -ExecutionPolicy Bypass -File "${tmpPs1}"`, { shell: true, stdio: 'ignore' });
   } else {
     // Linux: 尝试终端弹窗
     const script = path.join(__dirname, '..', 'scripts', 'polaroid.py');
