@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
 将图片转为终端像素画（半块字符 ▀▄█ + RGB 真彩色）
+
+Windows ANSI 支持自动开启。
 用法:
   python3 img2terminal.py <图片路径> [宽度] [--no-bg]
   python3 img2terminal.py crop <图片路径> <x> <y> <w> <h> [终端宽度]
@@ -8,6 +10,15 @@
 
 import sys
 from PIL import Image
+
+# Windows: 强制开启 ANSI 彩色支持
+if sys.platform == 'win32':
+    try:
+        import ctypes
+        kernel32 = ctypes.windll.kernel32
+        kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
+    except:
+        pass
 
 UPPER_HALF = "▀"
 LOWER_HALF = "▄"
