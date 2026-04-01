@@ -65,8 +65,8 @@ def main():
     target_h = int(sprite.height * ratio)
     sprite = sprite.resize((target_w, target_h), Image.LANCZOS)
 
-    # 像素化处理 — 产生复古像素风
-    sprite = pixelate(sprite, pixel_size=6)
+    # 像素化处理 — 强烈像素风，类似拼豆/像素游戏
+    sprite = pixelate(sprite, pixel_size=14)
 
     # 拍立得尺寸
     padding = 50
