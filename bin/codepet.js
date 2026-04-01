@@ -487,11 +487,8 @@ function doPopup() {
   } else if (process.platform === 'win32') {
     // Windows: 弹新 PowerShell 窗口，自动开启 ANSI 彩色支持
     const script = path.join(__dirname, '..', 'scripts', 'polaroid.py').replace(/\\/g, '/');
-    // 写 .bat 文件调用 PowerShell（最可靠的弹窗方式）
-    const tmpBat = path.join(os.tmpdir(), 'codepet_photo.bat');
-    const batContent = `@echo off\r\ntitle 📸 Ai小蓝鲸照相馆\r\n${PYTHON} "${script}" ${pet.character} ${scene} 40\r\nif errorlevel 1 (echo. & echo 出错了，请确认已安装 Pillow: pip install Pillow wcwidth)\r\npause >nul\r\n`;
-    fs.writeFileSync(tmpBat, batContent, 'utf-8');
-    execSync(`start "" "${tmpBat}"`, { shell: true, stdio: 'ignore' });
+    // Windows: cmd /c "start cmd /k ..." 是最可靠的弹窗方式
+    execSync(`cmd /c "start cmd /k ${PYTHON} "${script}" ${pet.character} ${scene} 40"`, { shell: true, stdio: 'ignore' });
   } else {
     // Linux: 尝试终端弹窗
     const script = path.join(__dirname, '..', 'scripts', 'polaroid.py');
