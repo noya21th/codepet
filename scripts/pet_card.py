@@ -121,23 +121,53 @@ STAT_COLORS = {
 # ─── Font loading ────────────────────────────────────────────────────────────
 
 def load_font(size, bold=False):
-    """Try macOS system fonts with CJK support, fallback gracefully."""
-    candidates = [
-        "/System/Library/Fonts/PingFang.ttc",
-        "/System/Library/Fonts/STHeiti Light.ttc",
-        "/System/Library/Fonts/Hiragino Sans GB.ttc",
-        "/System/Library/Fonts/Supplemental/Arial Unicode.ttf",
-        "/System/Library/Fonts/Helvetica.ttc",
-    ]
+    """Cross-platform font loading with CJK support. Tries macOS, Windows, Linux fonts."""
+    import platform
+    system = platform.system()
+
+    candidates = []
+    if system == "Darwin":
+        # macOS
+        candidates = [
+            "/System/Library/Fonts/PingFang.ttc",
+            "/System/Library/Fonts/STHeiti Light.ttc",
+            "/System/Library/Fonts/Hiragino Sans GB.ttc",
+            "/System/Library/Fonts/Supplemental/Arial Unicode.ttf",
+            "/System/Library/Fonts/Helvetica.ttc",
+        ]
+    elif system == "Windows":
+        # Windows - fonts are in C:\Windows\Fonts
+        winfonts = os.path.join(os.environ.get("WINDIR", r"C:\Windows"), "Fonts")
+        candidates = [
+            os.path.join(winfonts, "msyh.ttc"),       # 微软雅黑
+            os.path.join(winfonts, "msyhbd.ttc"),      # 微软雅黑 Bold
+            os.path.join(winfonts, "simhei.ttf"),      # 黑体
+            os.path.join(winfonts, "simsun.ttc"),      # 宋体
+            os.path.join(winfonts, "arial.ttf"),        # Arial fallback
+            os.path.join(winfonts, "segoeui.ttf"),      # Segoe UI
+        ]
+    else:
+        # Linux
+        candidates = [
+            "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+            "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc",
+            "/usr/share/fonts/google-noto-cjk/NotoSansCJK-Regular.ttc",
+            "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
+            "/usr/share/fonts/noto/NotoSansCJK-Regular.ttc",
+            "/usr/share/fonts/wenquanyi/wqy-microhei/wqy-microhei.ttc",
+            "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        ]
+
     # For bold, try index 1 in TTC (usually medium/bold weight)
     font_index = 1 if bold else 0
-    for path in candidates:
-        if os.path.exists(path):
+    for fpath in candidates:
+        if os.path.exists(fpath):
             try:
-                return ImageFont.truetype(path, size, index=font_index)
+                return ImageFont.truetype(fpath, size, index=font_index)
             except Exception:
                 try:
-                    return ImageFont.truetype(path, size, index=0)
+                    return ImageFont.truetype(fpath, size, index=0)
                 except Exception:
                     continue
     return ImageFont.load_default()
@@ -463,8 +493,13 @@ def generate_card(style="default"):
     card_rgb.save(out_path, "PNG", quality=95)
     print(f"Card saved to {out_path}")
 
+    # Cross-platform open
     if sys.platform == "darwin":
         os.system(f'open "{out_path}"')
+    elif sys.platform == "win32":
+        os.startfile(out_path)
+    else:
+        os.system(f'xdg-open "{out_path}" 2>/dev/null &')
 
 
 if __name__ == "__main__":

@@ -13,6 +13,35 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const { execSync } = require('child_process');
+
+// 跨平台 Python 命令检测
+function getPython() {
+  for (const cmd of ['python3', 'python']) {
+    try {
+      execSync(`${cmd} --version`, { stdio: 'ignore' });
+      return cmd;
+    } catch {}
+  }
+  return null;
+}
+const PYTHON = getPython();
+
+// 自动安装 Python 依赖 (Pillow, wcwidth)
+function ensurePythonDeps() {
+  if (!PYTHON) return;
+  try {
+    execSync(`${PYTHON} -c "import PIL, wcwidth"`, { stdio: 'ignore' });
+  } catch {
+    console.log('  正在安装依赖 (Pillow, wcwidth)...');
+    try {
+      execSync(`${PYTHON} -m pip install Pillow wcwidth --quiet`, { stdio: 'inherit' });
+    } catch {
+      // pip might need --user on some systems
+      try { execSync(`${PYTHON} -m pip install Pillow wcwidth --user --quiet`, { stdio: 'inherit' }); } catch {}
+    }
+  }
+}
+
 const core = require('../core');
 
 const SPRITES_DIR = path.join(__dirname, '..', 'sprites');
@@ -98,18 +127,28 @@ function installSkill(targetDir, platformName) {
     fs.copyFileSync(skillSrc, path.join(destDir, 'SKILL.md'));
   }
 
-  // 复制精灵图片
+  // 复制精灵图片（包括子目录中的表情图）
   if (fs.existsSync(SPRITES_DIR)) {
     const spriteDestDir = path.join(destDir, 'sprites');
     if (!fs.existsSync(spriteDestDir)) {
       fs.mkdirSync(spriteDestDir, { recursive: true });
     }
-    const files = fs.readdirSync(SPRITES_DIR).filter(f => f.endsWith('.png'));
-    for (const file of files) {
-      fs.copyFileSync(
-        path.join(SPRITES_DIR, file),
-        path.join(spriteDestDir, file)
-      );
+    const entries = fs.readdirSync(SPRITES_DIR, { withFileTypes: true });
+    for (const entry of entries) {
+      const srcPath = path.join(SPRITES_DIR, entry.name);
+      const dstPath = path.join(spriteDestDir, entry.name);
+      if (entry.isFile() && entry.name.endsWith('.png')) {
+        fs.copyFileSync(srcPath, dstPath);
+      } else if (entry.isDirectory() && entry.name !== '6') {
+        // Copy subdirectory (character expression sprites)
+        if (!fs.existsSync(dstPath)) {
+          fs.mkdirSync(dstPath, { recursive: true });
+        }
+        const subFiles = fs.readdirSync(srcPath).filter(f => f.endsWith('.png'));
+        for (const sf of subFiles) {
+          fs.copyFileSync(path.join(srcPath, sf), path.join(dstPath, sf));
+        }
+      }
     }
   }
 
@@ -168,8 +207,90 @@ function setup() {
     fs.copyFileSync(renderSrc, renderDst);
   }
 
+  // ── 配置 Claude Code hooks ──
+  configureCCHooks();
+
   console.log(`\n  ✅ 安装完成！共 ${installed} 个平台。`);
   console.log('  在任意支持的工具里输入 /pet 开始养宠物。\n');
+}
+
+// ── 配置 Claude Code settings.json hooks ──
+function configureCCHooks() {
+  const settingsPath = path.join(os.homedir(), '.claude', 'settings.json');
+  if (!fs.existsSync(path.dirname(settingsPath))) return; // Claude Code not installed
+
+  // Detect package root (works for both npm global install and local dev)
+  const pkgRoot = path.join(__dirname, '..');
+  const scriptsDir = path.join(pkgRoot, 'scripts');
+
+  // Build cross-platform hook commands
+  const pythonCmd = PYTHON || 'python3';
+  const petBubbleScript = path.join(scriptsDir, 'pet_bubble.js');
+  const autoExpScript = path.join(scriptsDir, 'auto_exp.py');
+
+  let petBubbleHook, autoExpHook;
+  if (process.platform === 'win32') {
+    // Windows: use node for .js, python for .py
+    petBubbleHook = `node "${petBubbleScript}"`;
+    autoExpHook = `${pythonCmd} "${autoExpScript}"`;
+  } else {
+    petBubbleHook = `node "${petBubbleScript}"`;
+    autoExpHook = `${pythonCmd} "${autoExpScript}"`;
+  }
+
+  // Read existing settings
+  let settings = {};
+  if (fs.existsSync(settingsPath)) {
+    try {
+      settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
+    } catch {
+      settings = {};
+    }
+  }
+
+  // Merge hooks - don't overwrite existing hooks, append if not present
+  if (!settings.hooks) settings.hooks = {};
+
+  // pet_bubble hook (runs after each assistant response)
+  const hookKey = 'PostToolExecution';
+  if (!settings.hooks[hookKey]) settings.hooks[hookKey] = [];
+  const existingBubble = settings.hooks[hookKey].find(h =>
+    (typeof h === 'string' ? h : h.command || '').includes('pet_bubble')
+  );
+  if (!existingBubble) {
+    settings.hooks[hookKey].push({
+      command: petBubbleHook,
+      description: 'CodePet bubble reaction'
+    });
+  }
+
+  // auto_exp hook (gains exp on tool execution)
+  const existingExp = settings.hooks[hookKey].find(h =>
+    (typeof h === 'string' ? h : h.command || '').includes('auto_exp')
+  );
+  if (!existingExp) {
+    settings.hooks[hookKey].push({
+      command: autoExpHook,
+      description: 'CodePet auto experience gain'
+    });
+  }
+
+  // Add bypassPermissions for codepet commands
+  if (!settings.bypassPermissions) settings.bypassPermissions = [];
+  const codepetPerms = [
+    'codepet *',
+    'node */codepet/bin/codepet.js *',
+    'node */codepet/scripts/*',
+  ];
+  for (const perm of codepetPerms) {
+    if (!settings.bypassPermissions.includes(perm)) {
+      settings.bypassPermissions.push(perm);
+    }
+  }
+
+  // Write back
+  fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n', 'utf-8');
+  console.log('  ✓ Claude Code — hooks 已配置');
 }
 
 // ── 渲染像素画 ──
@@ -181,12 +302,13 @@ function renderSprite(character, variant) {
     const renderImgScript = path.join(__dirname, '..', 'scripts', 'render_to_image.py');
     if (fs.existsSync(renderImgScript)) {
       try {
-        const imgPath = execSync(`python3 "${renderImgScript}" "${character}" "${variant}"`, { encoding: 'utf-8' }).trim();
+        const imgPath = execSync(`${PYTHON} "${renderImgScript}" "${character}" "${variant}"`, { encoding: 'utf-8' }).trim();
         console.log(`[图片:${imgPath}]`);
       } catch (e) {}
     }
   } else {
     // 终端模式：彩色像素画
+    if (!PYTHON) return; // Python 未安装，静默跳过
     const renderScript = path.join(__dirname, '..', 'scripts', 'img2terminal.py');
     let spritePath = path.join(SPRITES_DIR, character, `${variant}.png`);
     if (!fs.existsSync(spritePath)) {
@@ -194,7 +316,7 @@ function renderSprite(character, variant) {
     }
     if (fs.existsSync(spritePath) && fs.existsSync(renderScript)) {
       try {
-        const output = execSync(`python3 "${renderScript}" "${spritePath}" ${RENDER_WIDTH}`, { encoding: 'utf-8' });
+        const output = execSync(`${PYTHON} "${renderScript}" "${spritePath}" ${RENDER_WIDTH}`, { encoding: 'utf-8' });
         console.log(output);
       } catch (e) {}
     }
@@ -220,6 +342,7 @@ function showStats(pet) {
 }
 
 function show() {
+  ensurePythonDeps();
   const pet = core.loadPet();
   if (!pet) {
     console.log('\n  还没有宠物。运行 宠物 孵化\n');
@@ -330,16 +453,59 @@ function doFeed() {
   console.log(`  经验: ${pet.exp}/${core.getExpForNextLevel(pet.level) || 'MAX'}\n`);
 }
 
+function doAscii() {
+  ensurePythonDeps();
+  const pet = core.loadPet();
+  if (!pet) { console.log('  还没有宠物。'); return; }
+  if (!PYTHON) { console.log('  需要安装 Python。'); return; }
+  const scene = arg || 'normal';
+  const script = path.join(__dirname, '..', 'scripts', 'img2ascii.py');
+  let sprite = path.join(SPRITES_DIR, pet.character, `${scene}.png`);
+  if (!fs.existsSync(sprite)) sprite = path.join(SPRITES_DIR, `${pet.character}.png`);
+  if (fs.existsSync(script) && fs.existsSync(sprite)) {
+    try {
+      const out = execSync(`${PYTHON} "${script}" "${sprite}" 22`, { encoding: 'utf-8' });
+      console.log(out);
+    } catch {}
+  }
+}
+
+function doPopup() {
+  ensurePythonDeps();
+  const pet = core.loadPet();
+  if (!pet) { console.log('  还没有宠物。'); return; }
+  if (!PYTHON) { console.log('  需要安装 Python。'); return; }
+  const scene = arg || 'normal';
+  const script = path.join(__dirname, '..', 'scripts', 'polaroid.py');
+
+  if (process.platform === 'win32') {
+    // Windows: 用 start cmd 弹新窗口
+    // /k keeps CMD open so user can see the polaroid; they close it manually
+    execSync(`start "" cmd /k "${PYTHON} \\"${script}\\" ${pet.character} ${scene} 40 2>nul"`, { shell: true, stdio: 'ignore' });
+  } else if (process.platform === 'darwin') {
+    // macOS: 用 osascript 弹 Terminal
+    const escapedScript = script.replace(/'/g, "'\\''");
+    execSync(`osascript -e 'tell application "Terminal" to do script "export HISTFILE=/dev/null && export BASH_SILENCE_DEPRECATION_WARNING=1 && export PS1=\\\"\\\" && clear && ${PYTHON} \\\"${escapedScript}\\\" ${pet.character} ${scene} 40 2>/dev/null && printf \\\"\\\\033[?25l\\\" && cat > /dev/null"' -e 'tell application "Terminal" to activate' &`, { shell: true, stdio: 'ignore' });
+  } else {
+    // Linux
+    try {
+      execSync(`${PYTHON} "${script}" ${pet.character} ${scene} 40`, { stdio: 'inherit' });
+    } catch {}
+  }
+}
+
 function doCard() {
+  ensurePythonDeps();
   const pet = core.loadPet();
   if (!pet) { console.log('  还没有宠物。'); return; }
   const cardScript = path.join(__dirname, '..', 'scripts', 'pet_card.py');
   if (fs.existsSync(cardScript)) {
     try {
-      execSync(`python3 "${cardScript}"`, { encoding: 'utf-8', stdio: 'inherit' });
-      // 确保弹出 Preview
+      execSync(`${PYTHON} "${cardScript}"`, { encoding: 'utf-8', stdio: 'inherit' });
+      // 跨平台打开图片
       const cardPath = path.join(os.homedir(), '.codepet', 'card.png');
-      execSync(`open "${cardPath}"`, { stdio: 'ignore' });
+      const openCmd = process.platform === 'win32' ? 'start ""' : process.platform === 'darwin' ? 'open' : 'xdg-open';
+      execSync(`${openCmd} "${cardPath}"`, { stdio: 'ignore', shell: true });
     } catch (e) {
       console.log('  卡片生成失败。');
     }
@@ -350,14 +516,19 @@ function help() {
   console.log(`
   🐾 CodePet — 在编程软件里养电子宠物
 
-  用法:
-    宠物 安装        一键安装到所有编程工具
-    宠物 孵化        孵化新宠物
-    宠物 看看        查看宠物
-    宠物 摸摸        撸宠物
-    宠物 喂它        喂宠物
-    宠物 卡片        生成分享卡片
-    宠物 帮助        显示此帮助
+  用法 (macOS/Linux 可用 "宠物"，Windows 请用 "codepet"):
+    codepet setup     一键安装到所有编程工具
+    codepet hatch     孵化新宠物
+    codepet show      查看宠物
+    codepet pat       撸宠物
+    codepet feed      喂宠物
+    codepet card      生成分享卡片
+    codepet popup     拍照弹窗
+    codepet ascii     ASCII 画
+    codepet help      显示此帮助
+
+  中文别名 (macOS/Linux):
+    宠物 安装 / 孵化 / 看看 / 摸摸 / 喂它 / 卡片 / 帮助
 
   支持平台:
     Claude Code · Codex · Cursor · VS Code · Kiro
@@ -373,6 +544,8 @@ const CMD_MAP = {
   'pat': doPat, '摸摸': doPat, '撸': doPat, 'rua': doPat,
   'feed': doFeed, '喂': doFeed, '喂它': doFeed, '投食': doFeed,
   'card': doCard, '卡片': doCard, '宠物卡': doCard, '晒': doCard,
+  'ascii': doAscii, '画': doAscii,
+  'popup': doPopup, '照片': doPopup, '拍照': doPopup,
   'help': help, '帮助': help, '怎么玩': help,
 };
 

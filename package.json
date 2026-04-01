@@ -1,6 +1,6 @@
 {
   "name": "codepet",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "在编程软件里养电子宠物 — 支持 Claude Code / Codex / Cursor / VS Code 等 10+ 平台",
   "main": "core/index.js",
   "bin": {
@@ -32,8 +32,19 @@
   "files": [
     "bin/",
     "core/",
-    "scripts/",
+    "scripts/*.js",
+    "scripts/img2terminal.py",
+    "scripts/img2ascii.py",
+    "scripts/img2emoji.py",
+    "scripts/polaroid.py",
+    "scripts/pet_card.py",
+    "scripts/render_to_image.py",
+    "scripts/show_all.py",
+    "scripts/show_all_expressions.py",
+    "scripts/*.sh",
     "sprites/",
+    "!sprites/6/",
+    "!sprites/batch.json",
     "adapters/skill/",
     "README.md"
   ]

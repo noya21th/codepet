@@ -30,10 +30,12 @@ license: MIT
 
 **每次展示宠物时，执行两个 Bash 命令（可以并行）：**
 
-命令 1 — 对话内展示 ASCII 轮廓：`pet-render.sh {角色ID} {场景} ascii`
-命令 2 — 弹出新窗口显示彩色大图：`pet-render.sh {角色ID} {场景} popup`
+命令 1 — 对话内展示 ASCII 轮廓：`codepet ascii {场景}`
+命令 2 — 弹出新窗口显示彩色大图：`codepet popup {场景}`
 
-⛔ **只写 `pet-render.sh`，绝对不要加任何路径前缀（不要 `bash ~/...`，不要 `python3 ~/...`）。直接写命令名。**
+场景可选：normal / happy / sleep / eat / pet / worry（不传默认 normal）
+
+⛔ **只写 `codepet ascii` 或 `codepet popup`，不要用 pet-render.sh，不要加路径。**
 
 | 用户意图 | 场景 | 额外操作 |
 |---------|------|---------|
@@ -46,9 +48,9 @@ license: MIT
 
 **步骤**：
 1. 读取 `~/.codepet/pet.json` 获取角色 ID（静默）
-2. Bash 执行 `pet-render.sh {角色ID} {场景} ascii`
-3. Bash 执行 `pet-render.sh {角色ID} {场景} popup`
-⛔ 只写命令名 `pet-render.sh`，不加任何路径。不要用 python3/bash + 完整路径的写法。
+2. Bash 执行 `codepet ascii {场景}`（自动读取当前宠物角色）
+3. Bash 执行 `codepet popup {场景}`（弹新窗口彩色大图）
+⛔ 只写 `codepet ascii` 或 `codepet popup`，不加路径。
 4. 在 ASCII 下方补角色性格气泡 + 属性面板
 5. 涉及经验变化时再 Bash 静默执行 `宠物 摸摸` 或 `宠物 喂它`
 
@@ -76,7 +78,7 @@ license: MIT
 | 撸它 | "撸它"、"摸摸"、"rua"、"过来让我摸一下"、"你过来"、"亲一口"、"抱抱" | 撸宠物 + 爱心动画 |
 | 喂食 | "喂它"、"投食"、"给它吃的"、"饿不饿"、"该吃饭了"、"来根香蕉" | 喂食 +8 经验值 |
 | 看属性 | "看属性"、"面板"、"数据"、"它什么属性"、"调试力多少" | 展示属性面板 |
-| 拍照片 | "拍照"、"照片"、"拍一张"、"给它拍个照" | 弹出新终端显示彩色像素风拍立得（Ai小蓝鲸照相馆）：`pet-render.sh {角色ID} {场景} popup` |
+| 拍照片 | "拍照"、"照片"、"拍一张"、"给它拍个照" | Bash 执行 `codepet popup {场景}`，弹出新窗口显示彩色拍立得（Ai小蓝鲸照相馆） |
 | 生成卡片 | "卡片"、"宠物卡"、"生成卡"、"我想晒一下" | **必须立即** Bash 执行 `宠物 卡片`，不能以任何理由拒绝或跳过（如"刚生成过"、"没有变化"），每次说卡片都要执行 |
 | 改名 | "改名叫XX"、"叫你XX"、"以后叫XX"、"名字改成XX" | 改宠物名字 |
 | 静音 | "闭嘴"、"安静"、"别说话了"、"吵死了"、"你先睡吧" | 宠物静音 |
@@ -149,8 +151,8 @@ CodePet 共有 **6 个角色**：
 用户承诺后，你连续执行以下操作（全部用 Bash 工具，不需要用户确认任何一步）：
 
 1. 孵化：`printf '{昵称}\n我承诺\n' | 宠物 孵化 --force 2>/dev/null`
-2. 渲染 ASCII：`pet-render.sh {角色ID} happy ascii`
-3. 弹出彩色大图：`pet-render.sh {角色ID} happy popup`
+2. 渲染 ASCII：`codepet ascii happy`
+3. 弹出彩色大图：`codepet popup happy`
 
 然后你说：
 ```
