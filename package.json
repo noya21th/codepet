@@ -1,0 +1,40 @@
+{
+  "name": "codepet",
+  "version": "1.0.0",
+  "description": "在编程软件里养电子宠物 — 支持 Claude Code / Codex / Cursor / VS Code 等 10+ 平台",
+  "main": "core/index.js",
+  "bin": {
+    "codepet": "./bin/codepet.js",
+    "宠物": "./bin/codepet.js",
+    "pet-render.sh": "./bin/pet-render.sh"
+  },
+  "scripts": {
+    "test": "node -e \"const c=require('./core');console.log('OK', Object.keys(c).length, 'exports')\""
+  },
+  "keywords": [
+    "pet",
+    "coding-companion",
+    "terminal-art",
+    "claude-code",
+    "vscode",
+    "cursor",
+    "codex",
+    "ascii-art",
+    "pixel-art",
+    "tamagotchi"
+  ],
+  "author": "Ai小蓝鲸",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AiBlueWhale/codepet"
+  },
+  "files": [
+    "bin/",
+    "core/",
+    "scripts/",
+    "sprites/",
+    "adapters/skill/",
+    "README.md"
+  ]
+}

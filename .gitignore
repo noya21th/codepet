@@ -1,0 +1,9 @@
+node_modules/
+.DS_Store
+sprites/6/
+*.tmp
+scripts/crop_all.py
+scripts/crop_expressions.py
+scripts/gen_expressions.py
+test_sprites.sh
+__pycache__/

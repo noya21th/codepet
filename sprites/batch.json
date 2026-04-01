@@ -1,0 +1,46 @@
+{
+  "jobs": 6,
+  "tasks": [
+    {"id": "bibilabu-normal", "prompt": "A cute cat wearing a banana costume, calm default expression, looking forward with slightly sad eyes, meme art style, white background", "ref": ["bibilabu.png"], "image": "bibilabu/normal.png", "ar": "1:1"},
+    {"id": "bibilabu-happy", "prompt": "A cute cat wearing a banana costume, big happy smile, eyes squinting with joy, sparkles around, meme art style, white background", "ref": ["bibilabu.png"], "image": "bibilabu/happy.png", "ar": "1:1"},
+    {"id": "bibilabu-sleep", "prompt": "A cute cat wearing a banana costume, eyes peacefully closed, sleeping, zzZ floating above head, meme art style, white background", "ref": ["bibilabu.png"], "image": "bibilabu/sleep.png", "ar": "1:1"},
+    {"id": "bibilabu-eat", "prompt": "A cute cat wearing a banana costume, mouth wide open eating a small banana, cheeks puffed, meme art style, white background", "ref": ["bibilabu.png"], "image": "bibilabu/eat.png", "ar": "1:1"},
+    {"id": "bibilabu-pet", "prompt": "A cute cat wearing a banana costume, being petted on head, eyes half-closed in pleasure, blushing cheeks, meme art style, white background", "ref": ["bibilabu.png"], "image": "bibilabu/pet.png", "ar": "1:1"},
+    {"id": "bibilabu-worry", "prompt": "A cute cat wearing a banana costume, anxious worried expression, sweat drop on forehead, nervous wide eyes, meme art style, white background", "ref": ["bibilabu.png"], "image": "bibilabu/worry.png", "ar": "1:1"},
+
+    {"id": "bagayalu-normal", "prompt": "A shiba inu dog sitting upright, calm zen melancholic expression, eyes slightly closed, meme painting style, white background", "ref": ["bagayalu.png"], "image": "bagayalu/normal.png", "ar": "1:1"},
+    {"id": "bagayalu-happy", "prompt": "A shiba inu dog sitting upright, big happy grin, eyes squinting with joy, tail wagging visible, meme painting style, white background", "ref": ["bagayalu.png"], "image": "bagayalu/happy.png", "ar": "1:1"},
+    {"id": "bagayalu-sleep", "prompt": "A shiba inu dog sitting upright but head drooping, eyes closed sleeping peacefully, zzZ above head, meme painting style, white background", "ref": ["bagayalu.png"], "image": "bagayalu/sleep.png", "ar": "1:1"},
+    {"id": "bagayalu-eat", "prompt": "A shiba inu dog sitting upright, mouth open eating a treat, cheeks puffed happily, meme painting style, white background", "ref": ["bagayalu.png"], "image": "bagayalu/eat.png", "ar": "1:1"},
+    {"id": "bagayalu-pet", "prompt": "A shiba inu dog sitting upright, being petted on head, eyes half-closed in bliss, slight blush, meme painting style, white background", "ref": ["bagayalu.png"], "image": "bagayalu/pet.png", "ar": "1:1"},
+    {"id": "bagayalu-worry", "prompt": "A shiba inu dog sitting upright, worried anxious expression, sweat drop, ears back nervously, meme painting style, white background", "ref": ["bagayalu.png"], "image": "bagayalu/worry.png", "ar": "1:1"},
+
+    {"id": "wodedaodun-normal", "prompt": "A shiba inu dog lying flat on belly like a loaf, calm sleepy default face, side view, meme painting style, white background", "ref": ["wodedaodun.png"], "image": "wodedaodun/normal.png", "ar": "1:1"},
+    {"id": "wodedaodun-happy", "prompt": "A shiba inu dog lying flat on belly, happy smile while still lying down, eyes bright, meme painting style, white background", "ref": ["wodedaodun.png"], "image": "wodedaodun/happy.png", "ar": "1:1"},
+    {"id": "wodedaodun-sleep", "prompt": "A shiba inu dog lying flat on belly, deeply asleep, eyes completely closed, zzZ floating, drooling slightly, meme painting style, white background", "ref": ["wodedaodun.png"], "image": "wodedaodun/sleep.png", "ar": "1:1"},
+    {"id": "wodedaodun-eat", "prompt": "A shiba inu dog lying flat on belly, lazily eating a cookie from the ground, mouth open, meme painting style, white background", "ref": ["wodedaodun.png"], "image": "wodedaodun/eat.png", "ar": "1:1"},
+    {"id": "wodedaodun-pet", "prompt": "A shiba inu dog lying flat on belly, being petted, eyes half-closed enjoying it, slight smile, meme painting style, white background", "ref": ["wodedaodun.png"], "image": "wodedaodun/pet.png", "ar": "1:1"},
+    {"id": "wodedaodun-worry", "prompt": "A shiba inu dog lying flat on belly, worried nervous expression, eyes wide open for once, sweat drop, meme painting style, white background", "ref": ["wodedaodun.png"], "image": "wodedaodun/worry.png", "ar": "1:1"},
+
+    {"id": "bababoyi-normal", "prompt": "An extremely round fat cat shaped like a ball, huge dark owl-like eyes, pink nose, calm staring expression, meme style, white background", "ref": ["bababoyi.png"], "image": "bababoyi/normal.png", "ar": "1:1"},
+    {"id": "bababoyi-happy", "prompt": "An extremely round fat cat shaped like a ball, huge eyes now squinting with happiness, big smile, sparkles, meme style, white background", "ref": ["bababoyi.png"], "image": "bababoyi/happy.png", "ar": "1:1"},
+    {"id": "bababoyi-sleep", "prompt": "An extremely round fat cat shaped like a ball, huge eyes now peacefully closed, sleeping, zzZ, meme style, white background", "ref": ["bababoyi.png"], "image": "bababoyi/sleep.png", "ar": "1:1"},
+    {"id": "bababoyi-eat", "prompt": "An extremely round fat cat shaped like a ball, mouth open eating, cheeks even more puffed than usual, holding food, meme style, white background", "ref": ["bababoyi.png"], "image": "bababoyi/eat.png", "ar": "1:1"},
+    {"id": "bababoyi-pet", "prompt": "An extremely round fat cat shaped like a ball, being petted on head, huge eyes half-closed in pleasure, blushing, meme style, white background", "ref": ["bababoyi.png"], "image": "bababoyi/pet.png", "ar": "1:1"},
+    {"id": "bababoyi-worry", "prompt": "An extremely round fat cat shaped like a ball, huge eyes even wider with worry, sweat drop, nervous expression, meme style, white background", "ref": ["bababoyi.png"], "image": "bababoyi/worry.png", "ar": "1:1"},
+
+    {"id": "waibibabu-normal", "prompt": "A cartoon muscular man with grey cap, thick brown beard, white polo shirt, arms gesturing, calm confident expression, cartoon illustration style, white background", "ref": ["waibibabu.png"], "image": "waibibabu/normal.png", "ar": "1:1"},
+    {"id": "waibibabu-happy", "prompt": "A cartoon muscular man with grey cap, thick brown beard, white polo shirt, big happy grin, thumbs up, cartoon illustration style, white background", "ref": ["waibibabu.png"], "image": "waibibabu/happy.png", "ar": "1:1"},
+    {"id": "waibibabu-sleep", "prompt": "A cartoon muscular man with grey cap tilted, thick brown beard, white polo shirt, eyes closed sleeping standing up, zzZ, cartoon illustration style, white background", "ref": ["waibibabu.png"], "image": "waibibabu/sleep.png", "ar": "1:1"},
+    {"id": "waibibabu-eat", "prompt": "A cartoon muscular man with grey cap, thick brown beard, white polo shirt, eating a big sandwich with both hands, mouth full, cartoon illustration style, white background", "ref": ["waibibabu.png"], "image": "waibibabu/eat.png", "ar": "1:1"},
+    {"id": "waibibabu-pet", "prompt": "A cartoon muscular man with grey cap, thick brown beard, white polo shirt, being patted on shoulder, shy pleased expression despite tough look, cartoon illustration style, white background", "ref": ["waibibabu.png"], "image": "waibibabu/pet.png", "ar": "1:1"},
+    {"id": "waibibabu-worry", "prompt": "A cartoon muscular man with grey cap, thick brown beard, white polo shirt, worried anxious expression, hand on chin, sweat drop, cartoon illustration style, white background", "ref": ["waibibabu.png"], "image": "waibibabu/worry.png", "ar": "1:1"},
+
+    {"id": "gugugaga-normal", "prompt": "A round chubby cat with thick dark grey bangs covering forehead, white face visible below bangs, calm neutral expression, small mouth, meme style, white background", "ref": ["gugugaga.png"], "image": "gugugaga/normal.png", "ar": "1:1"},
+    {"id": "gugugaga-happy", "prompt": "A round chubby cat with thick dark grey bangs covering forehead, white face, rare happy smile, eyes squinting under bangs, meme style, white background", "ref": ["gugugaga.png"], "image": "gugugaga/happy.png", "ar": "1:1"},
+    {"id": "gugugaga-sleep", "prompt": "A round chubby cat with thick dark grey bangs covering forehead, eyes closed sleeping under the bangs, peaceful, zzZ, meme style, white background", "ref": ["gugugaga.png"], "image": "gugugaga/sleep.png", "ar": "1:1"},
+    {"id": "gugugaga-eat", "prompt": "A round chubby cat with thick dark grey bangs covering forehead, mouth open eating a small fish, cheeks puffed, meme style, white background", "ref": ["gugugaga.png"], "image": "gugugaga/eat.png", "ar": "1:1"},
+    {"id": "gugugaga-pet", "prompt": "A round chubby cat with thick dark grey bangs covering forehead, being petted, eyes half-closed in pleasure under bangs, slight blush, meme style, white background", "ref": ["gugugaga.png"], "image": "gugugaga/pet.png", "ar": "1:1"},
+    {"id": "gugugaga-worry", "prompt": "A round chubby cat with thick dark grey bangs covering forehead, worried nervous expression, sweat drop visible under bangs, wide eyes, meme style, white background", "ref": ["gugugaga.png"], "image": "gugugaga/worry.png", "ar": "1:1"}
+  ]
+}
