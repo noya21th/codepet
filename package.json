@@ -1,6 +1,6 @@
 {
   "name": "codepet",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "description": "在编程软件里养电子宠物 — 支持 Claude Code / Codex / Cursor / VS Code 等 10+ 平台",
   "main": "core/index.js",
   "bin": {
