@@ -486,7 +486,7 @@ function doPopup() {
     // Windows: 弹新 PowerShell 窗口，自动开启 ANSI 彩色支持
     const script = path.join(__dirname, '..', 'scripts', 'polaroid.py').replace(/\\/g, '/');
     const enableAnsi = `[Console]::OutputEncoding=[Text.Encoding]::UTF8; $Host.UI.RawUI.WindowTitle='📸 Ai小蓝鲸照相馆'; Set-ItemProperty HKCU:\\\\Console VirtualTerminalLevel -Type DWORD -Value 1 -ErrorAction SilentlyContinue;`;
-    const psCmd = `${enableAnsi} ${PYTHON} '${script}' ${pet.character} ${scene} 40 2>$null; Read-Host '按回车关闭'`;
+    const psCmd = `${enableAnsi} ${PYTHON} '${script}' ${pet.character} ${scene} 40 2>$null; Read-Host`;
     execSync(`start powershell -NoProfile -Command "${psCmd}"`, { shell: true, stdio: 'ignore' });
   } else {
     // Linux: 尝试终端弹窗
