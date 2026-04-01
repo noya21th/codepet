@@ -487,6 +487,11 @@ function doPopup() {
     const script = path.join(__dirname, '..', 'scripts', 'polaroid_image.py');
     try {
       execSync(`${PYTHON} "${script}" ${pet.character} ${scene}`, { encoding: 'utf-8', stdio: 'inherit' });
+      const photoPath = path.join(os.homedir(), '.codepet', 'photo.png');
+      if (fs.existsSync(photoPath)) {
+        const openCmd = process.platform === 'win32' ? 'start ""' : process.platform === 'darwin' ? 'open' : 'xdg-open';
+        execSync(`${openCmd} "${photoPath}"`, { stdio: 'ignore', shell: true });
+      }
     } catch {}
   }
 }

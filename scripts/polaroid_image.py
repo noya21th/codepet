@@ -100,14 +100,7 @@ def main():
     card_rgb.paste(card, mask=card.split()[3])
     card_rgb.save(OUTPUT, "PNG", quality=95)
 
-    # 打开
-    if platform.system() == "Darwin":
-        os.system(f'open "{OUTPUT}"')
-    elif platform.system() == "Windows":
-        os.startfile(OUTPUT)
-    else:
-        os.system(f'xdg-open "{OUTPUT}" 2>/dev/null &')
-
+    # 不在这里打开，让 Node.js 调用方负责打开
     print(OUTPUT)
 
 if __name__ == '__main__':
