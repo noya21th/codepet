@@ -487,8 +487,13 @@ function doPopup() {
   } else if (process.platform === 'win32') {
     // Windows: 弹新 PowerShell 窗口，自动开启 ANSI 彩色支持
     const script = path.join(__dirname, '..', 'scripts', 'polaroid.py').replace(/\\/g, '/');
-    // Windows: cmd /c "start cmd /k ..." 是最可靠的弹窗方式
-    execSync(`cmd /c "start cmd /k ${PYTHON} ${script} ${pet.character} ${scene} 40"`, { shell: true, stdio: 'ignore' });
+    // Windows: 用 Node.js spawn 弹新 CMD 窗口（不依赖 shell 环境）
+    const { spawn } = require('child_process');
+    spawn('cmd', ['/c', 'start', 'cmd', '/k', PYTHON, script, pet.character, scene, '40'], {
+      detached: true,
+      stdio: 'ignore',
+      shell: false,
+    }).unref();
   } else {
     // Linux: 尝试终端弹窗
     const script = path.join(__dirname, '..', 'scripts', 'polaroid.py');
