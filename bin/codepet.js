@@ -482,17 +482,23 @@ function doPopup() {
     const script = path.join(__dirname, '..', 'scripts', 'polaroid.py');
     const escapedScript = script.replace(/'/g, "'\\''");
     execSync(`osascript -e 'tell application "Terminal" to do script "export HISTFILE=/dev/null && export BASH_SILENCE_DEPRECATION_WARNING=1 && export PS1=\\\"\\\" && clear && ${PYTHON} \\\"${escapedScript}\\\" ${pet.character} ${scene} 40 2>/dev/null && printf \\\"\\\\033[?25l\\\" && cat > /dev/null"' -e 'tell application "Terminal" to activate' &`, { shell: true, stdio: 'ignore' });
+  } else if (process.platform === 'win32') {
+    // Windows: 弹新 PowerShell 窗口显示彩色像素画拍立得
+    const script = path.join(__dirname, '..', 'scripts', 'polaroid.py').replace(/\\/g, '\\\\');
+    const psCmd = `${PYTHON} \\"${script}\\" ${pet.character} ${scene} 40 2>$null; Read-Host`;
+    execSync(`start powershell -NoProfile -Command "${psCmd}"`, { shell: true, stdio: 'ignore' });
   } else {
-    // Windows / Linux: 生成 PNG 拍立得图片，用系统图片查看器打开
-    const script = path.join(__dirname, '..', 'scripts', 'polaroid_image.py');
-    try {
-      execSync(`${PYTHON} "${script}" ${pet.character} ${scene}`, { encoding: 'utf-8', stdio: 'inherit' });
-      const photoPath = path.join(os.homedir(), '.codepet', 'photo.png');
-      if (fs.existsSync(photoPath)) {
-        const openCmd = process.platform === 'win32' ? 'start ""' : process.platform === 'darwin' ? 'open' : 'xdg-open';
-        execSync(`${openCmd} "${photoPath}"`, { stdio: 'ignore', shell: true });
+    // Linux: 尝试终端弹窗
+    const script = path.join(__dirname, '..', 'scripts', 'polaroid.py');
+    if (process.env.DISPLAY) {
+      try {
+        execSync(`gnome-terminal -- bash -c '${PYTHON} "${script}" ${pet.character} ${scene} 40; read' 2>/dev/null &`, { shell: true, stdio: 'ignore' });
+      } catch {
+        try { execSync(`${PYTHON} "${script}" ${pet.character} ${scene} 40`, { stdio: 'inherit' }); } catch {}
       }
-    } catch {}
+    } else {
+      try { execSync(`${PYTHON} "${script}" ${pet.character} ${scene} 40`, { stdio: 'inherit' }); } catch {}
+    }
   }
 }
 
