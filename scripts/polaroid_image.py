@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""拍立得相框 — 生成 PNG 图片版（Windows 和通用平台）"""
+"""拍立得相框 — 像素风 PNG 图片版"""
 
 import sys, os, json, platform
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SPRITE_DIR = os.path.join(SCRIPT_DIR, "..", "sprites")
@@ -15,27 +15,15 @@ SCENE_ZH = {
 }
 
 def load_font(size):
-    """跨平台加载字体"""
     system = platform.system()
     candidates = []
     if system == "Darwin":
-        candidates = [
-            "/System/Library/Fonts/PingFang.ttc",
-            "/System/Library/Fonts/Hiragino Sans GB.ttc",
-        ]
+        candidates = ["/System/Library/Fonts/PingFang.ttc", "/System/Library/Fonts/Hiragino Sans GB.ttc"]
     elif system == "Windows":
         windir = os.environ.get("WINDIR", "C:\\Windows")
-        candidates = [
-            os.path.join(windir, "Fonts", "msyh.ttc"),
-            os.path.join(windir, "Fonts", "simhei.ttf"),
-            os.path.join(windir, "Fonts", "arial.ttf"),
-        ]
+        candidates = [os.path.join(windir, "Fonts", "msyh.ttc"), os.path.join(windir, "Fonts", "simhei.ttf"), os.path.join(windir, "Fonts", "arial.ttf")]
     else:
-        candidates = [
-            "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
-            "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-        ]
+        candidates = ["/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"]
     for fp in candidates:
         if os.path.exists(fp):
             try:
@@ -43,6 +31,12 @@ def load_font(size):
             except:
                 continue
     return ImageFont.load_default()
+
+def pixelate(img, pixel_size=8):
+    """把图片像素化 — 缩小再放大，产生像素颗粒感"""
+    w, h = img.size
+    small = img.resize((w // pixel_size, h // pixel_size), Image.NEAREST)
+    return small.resize((w, h), Image.NEAREST)
 
 def main():
     character = sys.argv[1] if len(sys.argv) > 1 else 'bagayalu'
@@ -62,45 +56,60 @@ def main():
 
     scene_zh = SCENE_ZH.get(scene, '一个瞬间')
 
-    # 加载角色图片
+    # 加载并像素化角色图片
     sprite = Image.open(img_path).convert("RGBA")
 
+    # 统一缩放到 400px 宽
+    target_w = 400
+    ratio = target_w / sprite.width
+    target_h = int(sprite.height * ratio)
+    sprite = sprite.resize((target_w, target_h), Image.LANCZOS)
+
+    # 像素化处理 — 产生复古像素风
+    sprite = pixelate(sprite, pixel_size=6)
+
     # 拍立得尺寸
-    padding = 40
-    bottom_area = 120
+    padding = 50
+    bottom_area = 140
     photo_w = sprite.width + padding * 2
     photo_h = sprite.height + padding + bottom_area
 
-    # 白色拍立得底板
-    card = Image.new("RGBA", (photo_w, photo_h), (255, 255, 255, 255))
+    # 奶白色拍立得底板
+    card = Image.new("RGBA", (photo_w, photo_h), (252, 250, 245, 255))
 
-    # 贴角色图片
+    # 贴像素化的角色图片
     card.paste(sprite, (padding, padding), sprite)
 
-    # 画边框阴影
     draw = ImageDraw.Draw(card)
-    draw.rectangle([0, 0, photo_w - 1, photo_h - 1], outline=(200, 200, 200), width=2)
+
+    # 图片区域细边框
+    draw.rectangle(
+        [padding - 2, padding - 2, padding + sprite.width + 1, padding + sprite.height + 1],
+        outline=(220, 218, 210), width=1
+    )
+
+    # 外边框阴影
+    draw.rectangle([0, 0, photo_w - 1, photo_h - 1], outline=(210, 208, 200), width=2)
 
     # 底部文字
-    font_caption = load_font(18)
-    font_studio = load_font(14)
+    font_caption = load_font(20)
+    font_studio = load_font(15)
 
     caption = f"📸 刚才抓拍到了{name}{scene_zh}..."
     studio = "🐋 Ai小蓝鲸照相馆"
 
-    caption_y = sprite.height + padding + 15
-    studio_y = caption_y + 35
+    caption_y = sprite.height + padding + 20
+    studio_y = caption_y + 45
 
     draw.text((padding, caption_y), caption, fill=(80, 80, 80), font=font_caption)
-    draw.text((padding, studio_y), studio, fill=(140, 140, 140), font=font_studio)
+    draw.text((padding, studio_y), studio, fill=(160, 158, 150), font=font_studio)
 
     # 保存
     os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)
-    card_rgb = Image.new("RGB", card.size, (255, 255, 255))
+    card_rgb = Image.new("RGB", card.size, (252, 250, 245))
     card_rgb.paste(card, mask=card.split()[3])
     card_rgb.save(OUTPUT, "PNG", quality=95)
 
-    # 不在这里打开，让 Node.js 调用方负责打开
     print(OUTPUT)
 
 if __name__ == '__main__':
