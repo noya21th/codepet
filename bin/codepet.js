@@ -549,6 +549,30 @@ function doLive() {
   console.log('  🐾 宠物窗口已打开。');
 }
 
+function doSurprise() {
+  const pet = core.loadPet();
+  if (!pet) { console.log('  还没有宠物。'); return; }
+  const action = arg;
+  if (action === 'on' || action === '开') {
+    pet.popupChance = pet.popupChance || 0.02;
+    if (pet.popupChance === 0) pet.popupChance = 0.02;
+    pet.surpriseEnabled = true;
+    core.savePet(pet);
+    console.log(`\n  ✅ 随机惊喜已开启（${(pet.popupChance * 100).toFixed(0)}% 概率）`);
+    console.log(`  编程时宠物会偶尔弹出来看你一眼。\n`);
+  } else if (action === 'off' || action === '关') {
+    pet.surpriseEnabled = false;
+    pet.popupChance = 0;
+    core.savePet(pet);
+    console.log('\n  🔕 随机惊喜已关闭。宠物不会突然冒出来了。\n');
+  } else {
+    const status = (pet.surpriseEnabled !== false && (pet.popupChance || 0) > 0) ? '开启' : '关闭';
+    const chance = ((pet.popupChance || 0.02) * 100).toFixed(0);
+    console.log(`\n  🎲 随机惊喜：${status}（${chance}% 概率）`);
+    console.log(`  用法：codepet surprise on / off\n`);
+  }
+}
+
 function doCheckEnv() {
   const script = path.join(__dirname, '..', 'scripts', 'check_env.js');
   execSync(`node "${script}"`, { stdio: 'inherit' });
@@ -632,6 +656,8 @@ function help() {
     codepet popup          拍照弹窗
     codepet ascii          ASCII 画
     codepet live           常驻宠物窗口（微动画）
+    codepet surprise on    打开随机惊喜弹窗
+    codepet surprise off   关闭随机惊喜弹窗
     codepet check          环境检测
     codepet help           显示此帮助
 
@@ -725,6 +751,7 @@ const CMD_MAP = {
   'fortune': doFortune, '运势': doFortune, '今日运势': doFortune,
   'diary': doDiary, '日记': doDiary, '宠物日记': doDiary,
   'live': doLive, '桌宠': doLive, '常驻': doLive, '窗口': doLive,
+  'surprise': doSurprise, '惊喜': doSurprise,
   'check': doCheckEnv, '检测': doCheckEnv, '环境': doCheckEnv,
   'help': help, '帮助': help, '怎么玩': help,
 };

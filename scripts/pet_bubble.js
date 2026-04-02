@@ -131,7 +131,8 @@ const line = lines[Math.floor(Math.random() * lines.length)];
 const name = pet.nickname || pet.name;
 
 // ── 极小概率弹出宠物照片（可在 pet.json 里设 popupChance 调整，默认 2%）──
-const popupChance = pet.popupChance !== undefined ? pet.popupChance : 0.02;
+const surpriseOn = pet.surpriseEnabled !== false;
+const popupChance = surpriseOn ? (pet.popupChance !== undefined ? pet.popupChance : 0.02) : 0;
 if (popupChance > 0 && Math.random() < popupChance) {
   const scenes = ['normal', 'happy', 'eat', 'pet', 'sleep'];
   const scene = scenes[Math.floor(Math.random() * scenes.length)];
