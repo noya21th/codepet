@@ -521,6 +521,39 @@ function doPopup() {
   }
 }
 
+function doLive() {
+  ensurePythonDeps();
+  const pet = core.loadPet();
+  if (!pet) { console.log('  还没有宠物。'); return; }
+  if (!PYTHON) { console.log('  需要安装 Python。'); return; }
+  const script = path.join(__dirname, '..', 'scripts', 'live_pet.py');
+
+  if (process.platform === 'darwin') {
+    // macOS: open new Terminal
+    const escapedScript = script.replace(/'/g, "'\\''");
+    execSync(`osascript -e 'tell application "Terminal" to do script "export HISTFILE=/dev/null && export PS1=\\\"\\\" && clear && ${PYTHON} \\\"${escapedScript}\\\"" ' -e 'tell application "Terminal" to activate' &`, { shell: true, stdio: 'ignore' });
+  } else if (process.platform === 'win32') {
+    // Windows: open new CMD with ANSI support
+    const { spawn } = require('child_process');
+    spawn('cmd', ['/c', 'start', 'cmd', '/k', PYTHON, script], {
+      detached: true, stdio: 'ignore', shell: false
+    }).unref();
+  } else {
+    // Linux: try gnome-terminal or run inline
+    try {
+      execSync(`gnome-terminal -- bash -c '${PYTHON} "${script}"' 2>/dev/null &`, { shell: true, stdio: 'ignore' });
+    } catch {
+      execSync(`${PYTHON} "${script}"`, { stdio: 'inherit' });
+    }
+  }
+  console.log('  🐾 宠物窗口已打开。');
+}
+
+function doCheckEnv() {
+  const script = path.join(__dirname, '..', 'scripts', 'check_env.js');
+  execSync(`node "${script}"`, { stdio: 'inherit' });
+}
+
 function doCard() {
   ensurePythonDeps();
   const pet = core.loadPet();
@@ -598,11 +631,13 @@ function help() {
     codepet vs [file]      宠物 PK 对比图
     codepet popup          拍照弹窗
     codepet ascii          ASCII 画
+    codepet live           常驻宠物窗口（微动画）
+    codepet check          环境检测
     codepet help           显示此帮助
 
   中文别名 (macOS/Linux):
     宠物 安装 / 孵化 / 看看 / 摸摸 / 喂它 / 成就 / 运势 / 日记 / 卡片
-    宠物 分享 / 小红书 / 朋友圈 / 对比 / pk / 帮助
+    宠物 分享 / 小红书 / 朋友圈 / 对比 / pk / 桌宠 / 检测 / 帮助
 
   支持平台:
     Claude Code · Codex · Cursor · VS Code · Kiro
@@ -689,6 +724,8 @@ const CMD_MAP = {
   'achievements': doAchievements, '成就': doAchievements,
   'fortune': doFortune, '运势': doFortune, '今日运势': doFortune,
   'diary': doDiary, '日记': doDiary, '宠物日记': doDiary,
+  'live': doLive, '桌宠': doLive, '常驻': doLive, '窗口': doLive,
+  'check': doCheckEnv, '检测': doCheckEnv, '环境': doCheckEnv,
   'help': help, '帮助': help, '怎么玩': help,
 };
 
