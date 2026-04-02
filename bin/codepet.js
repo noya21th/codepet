@@ -553,23 +553,34 @@ function doSurprise() {
   const pet = core.loadPet();
   if (!pet) { console.log('  还没有宠物。'); return; }
   const action = arg;
-  if (action === 'on' || action === '开') {
-    pet.popupChance = pet.popupChance || 0.02;
-    if (pet.popupChance === 0) pet.popupChance = 0.02;
-    pet.surpriseEnabled = true;
-    core.savePet(pet);
-    console.log(`\n  ✅ 随机惊喜已开启（${(pet.popupChance * 100).toFixed(0)}% 概率）`);
-    console.log(`  编程时宠物会偶尔弹出来看你一眼。\n`);
-  } else if (action === 'off' || action === '关') {
+  if (action === 'off' || action === '关') {
     pet.surpriseEnabled = false;
     pet.popupChance = 0;
     core.savePet(pet);
-    console.log('\n  🔕 随机惊喜已关闭。宠物不会突然冒出来了。\n');
+    console.log('\n  🔕 随机惊喜：关闭');
+    console.log('  宠物不会突然冒出来了。\n');
+  } else if (action === 'low' || action === '偶尔' || action === 'on' || action === '开') {
+    pet.surpriseEnabled = true;
+    pet.popupChance = 0.02;
+    core.savePet(pet);
+    console.log('\n  🎲 随机惊喜：偶尔出现（2%）');
+    console.log('  大约每 50 次对话弹一次，不影响工作。\n');
+  } else if (action === 'high' || action === '经常') {
+    pet.surpriseEnabled = true;
+    pet.popupChance = 0.1;
+    core.savePet(pet);
+    console.log('\n  🎉 随机惊喜：经常出现（10%）');
+    console.log('  大约每 10 次对话弹一次，热闹！\n');
   } else {
-    const status = (pet.surpriseEnabled !== false && (pet.popupChance || 0) > 0) ? '开启' : '关闭';
-    const chance = ((pet.popupChance || 0.02) * 100).toFixed(0);
-    console.log(`\n  🎲 随机惊喜：${status}（${chance}% 概率）`);
-    console.log(`  用法：codepet surprise on / off\n`);
+    const chance = pet.popupChance || 0;
+    let mode = '关闭';
+    if (chance >= 0.1) mode = '经常出现';
+    else if (chance > 0) mode = '偶尔出现';
+    console.log(`\n  🎲 随机惊喜：${mode}`);
+    console.log('  三档可选：');
+    console.log('    codepet surprise off    关闭');
+    console.log('    codepet surprise low    偶尔出现（2%）');
+    console.log('    codepet surprise high   经常出现（10%）\n');
   }
 }
 
@@ -656,8 +667,9 @@ function help() {
     codepet popup          拍照弹窗
     codepet ascii          ASCII 画
     codepet live           常驻宠物窗口（微动画）
-    codepet surprise on    打开随机惊喜弹窗
-    codepet surprise off   关闭随机惊喜弹窗
+    codepet surprise off   关闭惊喜
+    codepet surprise low   偶尔出现（2%）
+    codepet surprise high  经常出现（10%）
     codepet check          环境检测
     codepet help           显示此帮助
 
