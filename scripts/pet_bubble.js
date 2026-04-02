@@ -130,7 +130,20 @@ const lines = linesMap[pet.character] || linesMap.gugugaga;
 const line = lines[Math.floor(Math.random() * lines.length)];
 const name = pet.nickname || pet.name;
 
-// ── 特殊事件（只用文字气泡提醒，不弹窗打断编程）──
+// ── 极小概率弹出宠物照片（可在 pet.json 里设 popupChance 调整，默认 2%）──
+const popupChance = pet.popupChance !== undefined ? pet.popupChance : 0.02;
+if (popupChance > 0 && Math.random() < popupChance) {
+  const scenes = ['normal', 'happy', 'eat', 'pet', 'sleep'];
+  const scene = scenes[Math.floor(Math.random() * scenes.length)];
+  try {
+    const { spawn } = require('child_process');
+    const codepetBin = path.join(__dirname, '..', 'bin', 'codepet.js');
+    spawn('node', [codepetBin, 'popup', scene], { detached: true, stdio: 'ignore' }).unref();
+  } catch {}
+  process.exit(0); // 弹了照片就不再说话
+}
+
+// ── 特殊事件 ──
 
 // 升级提醒
 if (pet.level > 1) {

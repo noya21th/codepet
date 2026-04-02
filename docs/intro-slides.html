@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>CodePet 介绍</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Noto Sans SC',sans-serif; background:#111; }
+
+  .slide {
+    width: 405px;   /* 9:16 ratio at 405×720 */
+    height: 720px;
+    margin: 20px auto;
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+  }
+
+  /* ===== 1. 封面 ===== */
+  .s1 {
+    background: linear-gradient(170deg, #FFECD2 0%, #FCB69F 50%, #FF9A9E 100%);
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 30px; text-align: center;
+  }
+  .s1 .tag {
+    background: #FF6B6B; color: white; padding: 6px 18px;
+    border-radius: 20px; font-size: 12px; font-weight: 700;
+    letter-spacing: 2px; margin-bottom: 24px;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+  .s1 h1 {
+    font-size: 28px; font-weight: 900; line-height: 1.5;
+    color: #2D2D2D; margin-bottom: 8px;
+  }
+  .s1 h1 em { font-style: normal; color: #FF6B6B; }
+  .s1 .sub { font-size: 15px; color: #885544; margin-bottom: 30px; }
+  .pets-row {
+    display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+  }
+  .pet-avatar {
+    width: 56px; height: 56px; background: white; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  }
+  .pet-avatar img {
+    width: 48px; height: 48px; object-fit: contain;
+    image-rendering: pixelated;
+  }
+  .s1 .brand { font-size: 13px; color: #aa7766; margin-top: 28px; }
+  .s1 .emoji-float {
+    position: absolute; font-size: 28px; opacity: .3;
+    animation: float 4s ease-in-out infinite;
+  }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+
+  /* ===== 2. 起源故事 ===== */
+  .s2 {
+    background: linear-gradient(180deg, #1a1a2e, #16213e);
+    color: white; padding: 30px 24px;
+  }
+  .s2 h2 {
+    font-size: 22px; font-weight: 900; text-align: center;
+    margin-bottom: 6px;
+  }
+  .s2 .sub2 { font-size: 13px; color: #FF9A9E; text-align: center; margin-bottom: 24px; }
+  .story-cards { display: flex; flex-direction: column; gap: 12px; }
+  .story-card {
+    background: rgba(255,255,255,.06); border-radius: 14px;
+    padding: 16px 18px; border-left: 4px solid;
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .story-card:nth-child(1) { border-color: #FF6B6B; }
+  .story-card:nth-child(2) { border-color: #FFD93D; }
+  .story-card:nth-child(3) { border-color: #6BCB77; }
+  .story-card:nth-child(4) { border-color: #4D96FF; }
+  .story-card:nth-child(5) { border-color: #FF6B6B; }
+  .story-card .num {
+    font-size: 20px; font-weight: 900; opacity: .4; min-width: 24px;
+  }
+  .story-card .txt h3 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .story-card .txt p { font-size: 12px; color: #aaa; line-height: 1.5; }
+
+  /* ===== 3. 角色 ===== */
+  .s3 {
+    background: linear-gradient(170deg, #FFF5EE, #FFE8D6);
+    padding: 28px 20px;
+  }
+  .s3 h2 { font-size: 22px; font-weight: 900; text-align: center; color: #2D2D2D; margin-bottom: 4px; }
+  .s3 .sub3 { font-size: 12px; color: #aa8877; text-align: center; margin-bottom: 18px; }
+  .char-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .ccard {
+    background: white; border-radius: 16px; padding: 14px;
+    text-align: center; box-shadow: 0 3px 12px rgba(0,0,0,.05);
+    position: relative;
+  }
+  .ccard img {
+    width: 72px; height: 72px; object-fit: contain;
+    image-rendering: pixelated;
+  }
+  .ccard .cname { font-size: 14px; font-weight: 700; color: #333; margin-top: 6px; }
+  .ccard .crate {
+    font-size: 11px; font-weight: 700; color: white;
+    background: #FFB088; border-radius: 10px;
+    padding: 2px 10px; display: inline-block; margin-top: 4px;
+  }
+  .ccard.golden {
+    background: linear-gradient(135deg, #FFFDE7, #FFF8E1);
+    border: 2px solid #FFD700;
+  }
+  .ccard.golden .crate { background: #FFD700; color: #333; }
+  .s3 .hint {
+    background: white; border-radius: 12px; padding: 12px;
+    font-size: 11px; color: #888; text-align: center;
+    margin-top: 10px; line-height: 1.6;
+  }
+
+  /* ===== 4. 对比 ===== */
+  .s4 {
+    background: linear-gradient(180deg, #FFF0EB, #FFE0D3);
+    padding: 28px 20px;
+  }
+  .s4 h2 { font-size: 20px; font-weight: 900; text-align: center; color: #2D2D2D; margin-bottom: 18px; }
+  .vs-box {
+    background: white; border-radius: 16px; padding: 18px;
+    box-shadow: 0 3px 16px rgba(0,0,0,.06); margin-bottom: 12px;
+  }
+  .vs-box h3 {
+    font-size: 15px; font-weight: 900; margin-bottom: 10px;
+    padding-bottom: 8px; border-bottom: 2px dashed #eee;
+  }
+  .vs-box.old h3 { color: #bbb; }
+  .vs-box.new h3 { color: #FF6B6B; }
+  .vs-row { display: flex; gap: 10px; align-items: stretch; }
+  .vs-row .vs-box { flex: 1; }
+  .vs-box ul { list-style: none; }
+  .vs-box ul li {
+    font-size: 12px; padding: 5px 0; color: #666;
+    border-bottom: 1px solid #f8f8f8; line-height: 1.4;
+  }
+  .vs-box.old li::before { content: '✗ '; color: #ddd; }
+  .vs-box.new li::before { content: '✓ '; color: #FF6B6B; font-weight: 700; }
+  .vs-arrow {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; color: #FFB088; font-weight: 900;
+    min-width: 30px;
+  }
+  .s4 .bottom-bar {
+    background: #2D2D2D; border-radius: 12px; padding: 12px 16px;
+    color: #ccc; font-size: 11px; line-height: 1.7;
+  }
+  .s4 .bottom-bar strong { color: #FF6B6B; }
+  .s4 .bottom-bar .green { color: #6BCB77; }
+
+  /* ===== 5. 玩法 ===== */
+  .s5 {
+    background: linear-gradient(170deg, #E8F8F5, #D5F5E3, #FDEBD0);
+    padding: 28px 20px;
+  }
+  .s5 h2 { font-size: 22px; font-weight: 900; text-align: center; color: #2D2D2D; margin-bottom: 4px; }
+  .s5 .sub5 { font-size: 13px; color: #888; text-align: center; margin-bottom: 16px; }
+  .feat-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+  }
+  .feat {
+    background: white; border-radius: 14px; padding: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.04);
+    text-align: center;
+  }
+  .feat .ficon { font-size: 28px; margin-bottom: 6px; }
+  .feat h4 { font-size: 13px; font-weight: 700; color: #333; margin-bottom: 4px; }
+  .feat p { font-size: 11px; color: #999; line-height: 1.4; }
+
+  /* ===== 6. 安装 ===== */
+  .s6 {
+    background: linear-gradient(170deg, #2D2D2D, #1a1a2e);
+    color: white; padding: 30px 24px;
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; text-align: center;
+  }
+  .s6 h2 { font-size: 24px; font-weight: 900; margin-bottom: 20px; }
+  .cmd {
+    background: #0D1117; border: 2px solid #FF6B6B;
+    border-radius: 14px; padding: 16px 28px;
+    font-family: 'Courier New', monospace; font-size: 20px;
+    color: #58D68D; margin: 16px 0;
+  }
+  .s6 .hint6 { font-size: 13px; color: #888; margin-bottom: 20px; }
+  .tags-wrap { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 16px 0; }
+  .ptag {
+    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+    color: #FFD4B8; padding: 6px 14px; border-radius: 20px; font-size: 12px;
+  }
+  .s6 .flow-box {
+    background: rgba(255,255,255,.05); border-radius: 14px;
+    padding: 16px; margin: 16px 0; text-align: left; width: 100%;
+  }
+  .s6 .flow-box p { font-size: 13px; color: #ccc; line-height: 2; }
+  .s6 .flow-box span { color: #FFB088; }
+  .s6 .bigbrand { font-size: 22px; color: #FFB088; font-weight: 900; margin-top: 20px; }
+  .s6 .tagline { font-size: 14px; color: #777; margin-top: 8px; }
+  .hashtags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 16px; }
+  .ht { color: #FF6B6B; font-size: 12px; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- 1. 封面 -->
+<div class="slide s1">
+  <div class="emoji-float" style="top:40px;left:20px;">🥚</div>
+  <div class="emoji-float" style="top:80px;right:30px;animation-delay:1s;">✨</div>
+  <div class="emoji-float" style="bottom:120px;left:40px;animation-delay:2s;">💕</div>
+  <div class="emoji-float" style="bottom:80px;right:20px;animation-delay:0.5s;">🐾</div>
+
+  <div class="tag">⚡ CLAUDE 源码泄露</div>
+  <h1>Claude代码泄露后<br>我用它做了个<br><em>宠物养成游戏</em></h1>
+  <p class="sub">一行命令，养一只编程搭子</p>
+
+  <div class="pets-row">
+    <div class="pet-avatar"><img src="../sprites/bibilabu/happy.png"></div>
+    <div class="pet-avatar"><img src="../sprites/bagayalu/normal.png"></div>
+    <div class="pet-avatar"><img src="../sprites/bababoyi/normal.png"></div>
+    <div class="pet-avatar"><img src="../sprites/waibibabu/happy.png"></div>
+    <div class="pet-avatar"><img src="../sprites/gugugaga/normal.png"></div>
+    <div class="pet-avatar"><img src="../sprites/wodedaodun/sleep.png"></div>
+  </div>
+
+  <p class="brand">🐾 CodePet · Ai小蓝鲸</p>
+</div>
+
+<!-- 2. 起源 -->
+<div class="slide s2">
+  <h2>🔍 Claude源码里藏了什么？</h2>
+  <p class="sub2">一个被遗忘的宠物系统</p>
+
+  <div class="story-cards">
+    <div class="story-card">
+      <div class="num">01</div>
+      <div class="txt">
+        <h3>源码泄露 💥</h3>
+        <p>2026年4月，Claude Code 源码被公开，src/buddy/ 目录暴露了完整的宠物架构</p>
+      </div>
+    </div>
+    <div class="story-card">
+      <div class="num">02</div>
+      <div class="txt">
+        <h3>隐藏的 Buddy 系统 🐣</h3>
+        <p>CompanionSprite 渲染组件 · 500ms 动画 · Mulberry32 确定性随机 · 18 种物种</p>
+      </div>
+    </div>
+    <div class="story-card">
+      <div class="num">03</div>
+      <div class="txt">
+        <h3>5 个属性像 RPG 🎮</h3>
+        <p>调试力 · 耐心值 · 混沌值 · 智慧值 · 毒舌值 —— 每只都有 1 个巅峰和 1 个短板</p>
+      </div>
+    </div>
+    <div class="story-card">
+      <div class="num">04</div>
+      <div class="txt">
+        <h3>但它是个半成品 😢</h3>
+        <p>只有孵化和撸，没养成、没喂食、没等级。Observer 接口留了但函数体为空</p>
+      </div>
+    </div>
+    <div class="story-card">
+      <div class="num">05</div>
+      <div class="txt">
+        <h3>我决定把它做完 ✊</h3>
+        <p>6 个梗图角色 · 36 张 AI 表情 · 养成系统 · 跨 9 个编程工具 · npm 一行安装</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3. 角色 -->
+<div class="slide s3">
+  <h2>🎲 6个梗图角色</h2>
+  <p class="sub3">确定性孵化 · 同一用户永远是同一只</p>
+
+  <div class="char-grid">
+    <div class="ccard">
+      <img src="../sprites/bibilabu/happy.png">
+      <div class="cname">比比拉布</div>
+      <div class="crate">28%</div>
+    </div>
+    <div class="ccard">
+      <img src="../sprites/bagayalu/normal.png">
+      <div class="cname">八嘎呀路</div>
+      <div class="crate">28%</div>
+    </div>
+    <div class="ccard">
+      <img src="../sprites/bababoyi/normal.png">
+      <div class="cname">巴巴博一</div>
+      <div class="crate">20%</div>
+    </div>
+    <div class="ccard">
+      <img src="../sprites/waibibabu/happy.png">
+      <div class="cname">歪比巴卜</div>
+      <div class="crate">12%</div>
+    </div>
+    <div class="ccard">
+      <img src="../sprites/gugugaga/eat.png">
+      <div class="cname">咕咕嘎嘎</div>
+      <div class="crate">8%</div>
+    </div>
+    <div class="ccard golden">
+      <img src="../sprites/wodedaodun/sleep.png">
+      <div class="cname">我的刀盾</div>
+      <div class="crate">🌟 4%</div>
+    </div>
+  </div>
+
+  <div class="hint">
+    ⭐ 5级稀有度：普通60% · 优秀25% · 稀有10% · 史诗4% · 传奇1%<br>
+    🎨 每角色6种表情 · 7种帽子 · 5种配饰
+  </div>
+</div>
+
+<!-- 4. 对比 -->
+<div class="slide s4">
+  <h2>🔄 半成品 → 完整产品</h2>
+
+  <div class="vs-row">
+    <div class="vs-box old">
+      <h3>Claude 原版</h3>
+      <ul>
+        <li>只有 /buddy 命令</li>
+        <li>ASCII 字符画</li>
+        <li>无养成无等级</li>
+        <li>无喂食功能</li>
+        <li>性格不可控</li>
+        <li>仅 Claude Code</li>
+        <li>限时彩蛋</li>
+      </ul>
+    </div>
+    <div class="vs-arrow">→</div>
+    <div class="vs-box new">
+      <h3>CodePet ✨</h3>
+      <ul>
+        <li>中文大白话命令</li>
+        <li>彩色像素画+拍立得</li>
+        <li>6级养成+自动涨经验</li>
+        <li>喂食+专属食物</li>
+        <li>固定性格模板</li>
+        <li>9个平台全支持</li>
+        <li>永久+成就+运势</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <strong>沿用：</strong>Mulberry32随机 · 5属性 · 5级稀有度 · 帽子配饰<br>
+    <strong class="green">新增：</strong>孵化仪式 · 养成升级 · 拍立得 · 成就 · 日记 · 运势 · 桌宠 · 分享卡
+  </div>
+</div>
+
+<!-- 5. 玩法 -->
+<div class="slide s5">
+  <h2>🎮 不帮你写代码，只陪你</h2>
+  <p class="sub5">它没用，但你会想要它</p>
+
+  <div class="feat-grid">
+    <div class="feat">
+      <div class="ficon">💻</div>
+      <h4>自动涨经验</h4>
+      <p>写代码+5<br>commit+15<br>修bug+10</p>
+    </div>
+    <div class="feat">
+      <div class="ficon">💬</div>
+      <h4>30%冒泡吐槽</h4>
+      <p>根据性格和心情<br>随机说一句话</p>
+    </div>
+    <div class="feat">
+      <div class="ficon">😰</div>
+      <h4>会焦虑</h4>
+      <p>>2h睡着<br>>6h焦虑<br>回来它超激动</p>
+    </div>
+    <div class="feat">
+      <div class="ficon">📸</div>
+      <h4>拍立得照片</h4>
+      <p>弹新窗口<br>逐行慢显示<br>像素风相框</p>
+    </div>
+    <div class="feat">
+      <div class="ficon">🏅</div>
+      <h4>18个成就</h4>
+      <p>撸猫达人<br>欧皇·天选之人<br>千锤百炼</p>
+    </div>
+    <div class="feat">
+      <div class="ficon">🔮</div>
+      <h4>今日运势</h4>
+      <p>大吉到大凶<br>每天不同<br>同宠物同结果</p>
+    </div>
+    <div class="feat">
+      <div class="ficon">📖</div>
+      <h4>宠物日记</h4>
+      <p>自动记录30天<br>经验·等级<br>撸了几次</p>
+    </div>
+    <div class="feat">
+      <div class="ficon">🐾</div>
+      <h4>桌宠常驻</h4>
+      <p>独立窗口<br>像素微动画<br>偶尔说话</p>
+    </div>
+  </div>
+</div>
+
+<!-- 6. 安装 -->
+<div class="slide s6">
+  <h2>⚡ 一行命令<br>9个平台</h2>
+
+  <div class="cmd">npm i -g codepet</div>
+  <p class="hint6">安装后 codepet setup 自动部署</p>
+
+  <div class="tags-wrap">
+    <span class="ptag">Claude Code</span>
+    <span class="ptag">Codex</span>
+    <span class="ptag">Cursor</span>
+    <span class="ptag">VS Code</span>
+    <span class="ptag">Kiro</span>
+    <span class="ptag">CodeBuddy</span>
+    <span class="ptag">OpenClaw</span>
+    <span class="ptag">Antigravity</span>
+    <span class="ptag">OpenCode</span>
+  </div>
+
+  <div class="flow-box">
+    <p>
+      🥚 <span>孵化</span>：起名 → 签承诺书 → 破壳<br>
+      🎮 <span>日常</span>：摸摸 · 喂它 · 拍照 · 成就 · 运势<br>
+      📱 <span>分享</span>：卡片 · 小红书模板 · 二维码
+    </p>
+  </div>
+
+  <p class="bigbrand">🐾 CodePet · Ai小蓝鲸</p>
+  <p class="tagline">每个程序员都值得一只编程搭子</p>
+
+  <div class="hashtags">
+    <span class="ht">#Claude代码泄露</span>
+    <span class="ht">#电子宠物</span>
+    <span class="ht">#程序员浪漫</span>
+    <span class="ht">#CodePet</span>
+    <span class="ht">#AI编程</span>
+  </div>
+</div>
+
+</body>
+</html>
