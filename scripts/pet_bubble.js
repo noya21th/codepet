@@ -130,45 +130,27 @@ const lines = linesMap[pet.character] || linesMap.gugugaga;
 const line = lines[Math.floor(Math.random() * lines.length)];
 const name = pet.nickname || pet.name;
 
-// ── 惊喜触发：特定场景自动弹照片 ──
-const { execSync, spawn } = require('child_process');
-const codepetBin = path.join(__dirname, '..', 'bin', 'codepet.js');
+// ── 特殊事件（只用文字气泡提醒，不弹窗打断编程）──
 
-function triggerPopup(scene) {
-  try {
-    spawn('node', [codepetBin, 'popup', scene], { detached: true, stdio: 'ignore' }).unref();
-  } catch {}
-}
-
-// 升级时 → 弹开心照片 🎉
-if (moodChanged && pet.level > 1) {
-  const prevExp = pet.exp - 5; // 粗略判断
+// 升级提醒
+if (pet.level > 1) {
   const LEVELS = [0, 50, 150, 350, 600, 1000];
+  const prevExp = pet.exp - 5;
   for (let i = 1; i < LEVELS.length; i++) {
     if (prevExp < LEVELS[i] && pet.exp >= LEVELS[i]) {
-      triggerPopup('happy');
-      console.error(`\n🎉 ${name} 升级到 Lv.${pet.level} 了！`);
-      break;
+      console.error(`\n🎉 ${name} 升级到 Lv.${pet.level} 了！说"拍照"给它留个纪念吧。`);
+      process.exit(0);
     }
   }
 }
 
-// 久别重逢（从 worry 恢复）→ 弹 pet 照片 💕
-if (moodChanged && pet.mood === '清醒' && hoursAgo <= 2) {
-  // 之前是焦虑状态，现在回来了
-  const lastMood = hoursAgo > 6 ? 'worry' : (hoursAgo > 2 ? 'sleep' : null);
-  if (lastMood === 'worry') {
-    triggerPopup('pet');
-    console.error(`\n💕 ${name} 看到你回来了，激动得不行！`);
-    process.exit(0); // 这次不说话，只弹照片
+// 久别重逢
+if (moodChanged && pet.mood === '清醒') {
+  const wasMood = hoursAgo > 6 ? 'worry' : (hoursAgo > 2 ? 'sleep' : null);
+  if (wasMood === 'worry') {
+    console.error(`\n💕 ${name} 等你好久了！说"摸摸"安慰一下它吧。`);
+    process.exit(0);
   }
-}
-
-// 连续编程超过 50 次互动（估算约 2 小时高强度编程）→ 弹 eat 照片提醒休息
-if (pet.patCount + pet.feedCount > 0 && (pet.patCount + pet.feedCount) % 50 === 0) {
-  triggerPopup('eat');
-  console.error(`\n🍵 ${name} 觉得你该休息一下了！`);
-  process.exit(0);
 }
 
 // 输出气泡到 stderr（hook 反馈格式）

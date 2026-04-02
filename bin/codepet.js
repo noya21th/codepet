@@ -443,6 +443,12 @@ function doPat() {
   console.log(`  ${pet.name} 开心得不得了！(+3 经验)`);
   if (leveledUp) console.log(`  🎉 升级到 Lv.${pet.level}！`);
   console.log(`  经验: ${pet.exp}/${core.getExpForNextLevel(pet.level) || 'MAX'}\n`);
+  const { checkAchievements } = require('../core/achievements');
+  const newAchievements = checkAchievements(pet);
+  core.savePet(pet);
+  for (const a of newAchievements) {
+    console.log(`  🎉 新成就：${a.icon} ${a.name}！`);
+  }
 }
 
 function doFeed() {
@@ -453,6 +459,12 @@ function doFeed() {
   console.log(`  ${pet.name} 吃得很开心！(+8 经验)`);
   if (leveledUp) console.log(`  🎉 升级到 Lv.${pet.level}！`);
   console.log(`  经验: ${pet.exp}/${core.getExpForNextLevel(pet.level) || 'MAX'}\n`);
+  const { checkAchievements } = require('../core/achievements');
+  const newAchievements = checkAchievements(pet);
+  core.savePet(pet);
+  for (const a of newAchievements) {
+    console.log(`  🎉 新成就：${a.icon} ${a.name}！`);
+  }
 }
 
 function doAscii() {
@@ -532,23 +544,89 @@ function help() {
   🐾 CodePet — 在编程软件里养电子宠物
 
   用法 (macOS/Linux 可用 "宠物"，Windows 请用 "codepet"):
-    codepet setup     一键安装到所有编程工具
-    codepet hatch     孵化新宠物
-    codepet show      查看宠物
-    codepet pat       撸宠物
-    codepet feed      喂宠物
-    codepet card      生成分享卡片
-    codepet popup     拍照弹窗
-    codepet ascii     ASCII 画
-    codepet help      显示此帮助
+    codepet setup          一键安装到所有编程工具
+    codepet hatch          孵化新宠物
+    codepet show           查看宠物
+    codepet pat            撸宠物
+    codepet feed           喂宠物
+    codepet achievements   查看成就
+    codepet fortune        今日运势
+    codepet diary          宠物日记
+    codepet card           生成分享卡片
+    codepet popup          拍照弹窗
+    codepet ascii          ASCII 画
+    codepet help           显示此帮助
 
   中文别名 (macOS/Linux):
-    宠物 安装 / 孵化 / 看看 / 摸摸 / 喂它 / 卡片 / 帮助
+    宠物 安装 / 孵化 / 看看 / 摸摸 / 喂它 / 成就 / 运势 / 日记 / 卡片 / 帮助
 
   支持平台:
     Claude Code · Codex · Cursor · VS Code · Kiro
     CodeBuddy · OpenClaw · Antigravity · OpenCode
   `);
+}
+
+function doAchievements() {
+  const pet = core.loadPet();
+  if (!pet) { console.log('  还没有宠物。'); return; }
+  const { checkAchievements, getAllAchievements } = require('../core/achievements');
+  const newOnes = checkAchievements(pet);
+  core.savePet(pet);
+
+  if (newOnes.length > 0) {
+    console.log('\n  🎉 新成就解锁！');
+    for (const a of newOnes) {
+      console.log(`  ${a.icon} ${a.name} — ${a.desc}`);
+    }
+    console.log();
+  }
+
+  const all = getAllAchievements(pet);
+  const unlocked = all.filter(a => a.unlocked);
+  const locked = all.filter(a => !a.unlocked);
+
+  console.log(`\n  🏅 成就 (${unlocked.length}/${all.length})\n`);
+  for (const a of unlocked) {
+    console.log(`  ${a.icon} ${a.name} — ${a.desc} ✓`);
+  }
+  if (locked.length > 0) {
+    console.log();
+    for (const a of locked) {
+      console.log(`  🔒 ??? — ${a.desc}`);
+    }
+  }
+  console.log();
+}
+
+function doFortune() {
+  const pet = core.loadPet();
+  if (!pet) { console.log('  还没有宠物。'); return; }
+  const { getDailyFortune } = require('../core/fortune');
+  const f = getDailyFortune(pet);
+  const name = pet.nickname || pet.name;
+
+  console.log(`\n  🔮 ${name} 今日运势\n`);
+  console.log(`  ${f.icon} ${f.level}`);
+  console.log(`  ${f.advice}\n`);
+}
+
+function doDiary() {
+  const pet = core.loadPet();
+  if (!pet) { console.log('  还没有宠物。'); return; }
+  const { recordToday, getRecentDiary } = require('../core/diary');
+  recordToday(pet);
+  const entries = getRecentDiary(7);
+  const name = pet.nickname || pet.name;
+
+  console.log(`\n  📖 ${name} 最近 7 天日记\n`);
+  if (entries.length === 0) {
+    console.log('  还没有记录。');
+  } else {
+    for (const e of entries) {
+      console.log(`  ${e.date} | Lv.${e.level} | 经验 ${e.exp} | 撸 ${e.pats} 次 | 喂 ${e.feeds} 次`);
+    }
+  }
+  console.log();
 }
 
 // ── 入口（中英文都支持）──
@@ -561,6 +639,9 @@ const CMD_MAP = {
   'card': doCard, '卡片': doCard, '宠物卡': doCard, '晒': doCard,
   'ascii': doAscii, '画': doAscii,
   'popup': doPopup, '照片': doPopup, '拍照': doPopup,
+  'achievements': doAchievements, '成就': doAchievements,
+  'fortune': doFortune, '运势': doFortune, '今日运势': doFortune,
+  'diary': doDiary, '日记': doDiary, '宠物日记': doDiary,
   'help': help, '帮助': help, '怎么玩': help,
 };
 
