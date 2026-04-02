@@ -539,6 +539,46 @@ function doCard() {
   }
 }
 
+function doShareCard() {
+  ensurePythonDeps();
+  const pet = core.loadPet();
+  if (!pet) { console.log('  还没有宠物。'); return; }
+  const script = path.join(__dirname, '..', 'scripts', 'share_card.py');
+  try {
+    execSync(`${PYTHON} "${script}"`, { stdio: 'inherit' });
+    const imgPath = path.join(os.homedir(), '.codepet', 'share_card.png');
+    const openCmd = process.platform === 'win32' ? 'start ""' : process.platform === 'darwin' ? 'open' : 'xdg-open';
+    execSync(`${openCmd} "${imgPath}"`, { stdio: 'ignore', shell: true });
+  } catch { console.log('  生成失败。'); }
+}
+
+function doXhsShare() {
+  ensurePythonDeps();
+  const pet = core.loadPet();
+  if (!pet) { console.log('  还没有宠物。'); return; }
+  const script = path.join(__dirname, '..', 'scripts', 'xhs_template.py');
+  try {
+    execSync(`${PYTHON} "${script}"`, { stdio: 'inherit' });
+    const imgPath = path.join(os.homedir(), '.codepet', 'xhs_share.png');
+    const openCmd = process.platform === 'win32' ? 'start ""' : process.platform === 'darwin' ? 'open' : 'xdg-open';
+    execSync(`${openCmd} "${imgPath}"`, { stdio: 'ignore', shell: true });
+  } catch { console.log('  生成失败。'); }
+}
+
+function doVsCompare() {
+  ensurePythonDeps();
+  const pet = core.loadPet();
+  if (!pet) { console.log('  还没有宠物。'); return; }
+  const script = path.join(__dirname, '..', 'scripts', 'vs_compare.py');
+  const otherFile = arg || '';
+  try {
+    execSync(`${PYTHON} "${script}" ${otherFile}`, { stdio: 'inherit' });
+    const imgPath = path.join(os.homedir(), '.codepet', 'vs_compare.png');
+    const openCmd = process.platform === 'win32' ? 'start ""' : process.platform === 'darwin' ? 'open' : 'xdg-open';
+    execSync(`${openCmd} "${imgPath}"`, { stdio: 'ignore', shell: true });
+  } catch { console.log('  生成失败。'); }
+}
+
 function help() {
   console.log(`
   🐾 CodePet — 在编程软件里养电子宠物
@@ -553,12 +593,16 @@ function help() {
     codepet fortune        今日运势
     codepet diary          宠物日记
     codepet card           生成分享卡片
+    codepet share          生成二维码分享卡
+    codepet xhs            生成小红书/朋友圈分享图
+    codepet vs [file]      宠物 PK 对比图
     codepet popup          拍照弹窗
     codepet ascii          ASCII 画
     codepet help           显示此帮助
 
   中文别名 (macOS/Linux):
-    宠物 安装 / 孵化 / 看看 / 摸摸 / 喂它 / 成就 / 运势 / 日记 / 卡片 / 帮助
+    宠物 安装 / 孵化 / 看看 / 摸摸 / 喂它 / 成就 / 运势 / 日记 / 卡片
+    宠物 分享 / 小红书 / 朋友圈 / 对比 / pk / 帮助
 
   支持平台:
     Claude Code · Codex · Cursor · VS Code · Kiro
@@ -637,6 +681,9 @@ const CMD_MAP = {
   'pat': doPat, '摸摸': doPat, '撸': doPat, 'rua': doPat,
   'feed': doFeed, '喂': doFeed, '喂它': doFeed, '投食': doFeed,
   'card': doCard, '卡片': doCard, '宠物卡': doCard, '晒': doCard,
+  'share': doShareCard, '分享': doShareCard, '二维码': doShareCard,
+  'xhs': doXhsShare, '小红书': doXhsShare, '朋友圈': doXhsShare,
+  'vs': doVsCompare, '对比': doVsCompare, 'pk': doVsCompare,
   'ascii': doAscii, '画': doAscii,
   'popup': doPopup, '照片': doPopup, '拍照': doPopup,
   'achievements': doAchievements, '成就': doAchievements,

@@ -1,6 +1,6 @@
 {
   "name": "codepet",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "在编程软件里养电子宠物 — 支持 Claude Code / Codex / Cursor / VS Code 等 10+ 平台",
   "main": "core/index.js",
   "bin": {
@@ -49,6 +49,9 @@
     "scripts/polaroid.py",
     "scripts/polaroid_image.py",
     "scripts/pet_card.py",
+    "scripts/share_card.py",
+    "scripts/xhs_template.py",
+    "scripts/vs_compare.py",
     "scripts/render_to_image.py",
     "scripts/show_all.py",
     "scripts/show_all_expressions.py",
